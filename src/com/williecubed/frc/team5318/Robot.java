@@ -7,6 +7,10 @@
 
 package com.williecubed.frc.team5318;
 
+import edu.wpi.cscore.CvSink;
+import edu.wpi.cscore.CvSource;
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -17,6 +21,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.williecubed.frc.team5318.commands.ExampleCommand;
 import com.williecubed.frc.team5318.subsystems.ExampleSubsystem;
+import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -27,7 +33,7 @@ import com.williecubed.frc.team5318.subsystems.ExampleSubsystem;
  */
 public class Robot extends TimedRobot {
 
-    public static double MULTIPLIER = 0.5;
+    public static double DFAULT_MULTIPLIER = 0.5;
 
     public static final ExampleSubsystem exampleSubsystem = new ExampleSubsystem();
     //    public static OI oi;
@@ -37,13 +43,20 @@ public class Robot extends TimedRobot {
 
     private DifferentialDrive robotDrive;
     private Joystick joystickOne;
+    private Joystick joystickTwo;
 
     @Override
     public void robotInit() {
+        initCamera();
         Talon leftTalon = new Talon(0);
         Talon rightTalon = new Talon(1);
         robotDrive = new DifferentialDrive(leftTalon, rightTalon);
-        joystickOne = new Joystick(0);
+        joystickOne = new Joystick(1);
+        joystickTwo = new Joystick(2);
+    }
+
+    private void initCamera() {
+        CameraServer.getInstance().startAutomaticCapture();
     }
 
     @Override
@@ -63,9 +76,20 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopPeriodic() {
-//        double multiplier = MULTIPLIER;
-        double multiplier = joystickOne.getMagnitude();
-        robotDrive.arcadeDrive(multiplier * joystickOne.getY(), multiplier * joystickOne.getX());
+//        double multiplier = DFAULT_MULTIPLIER;
+        double twist = joystickTwo.getTwist();
+        double leftThrottleValue = joystickOne.getRawAxis(2) + 1;
+        double leftMultiplier = Math.sqrt(leftThrottleValue);
+        double rightThrottleValue = joystickTwo.getRawAxis(3) + 1;
+        double rightMultiplier = Math.sqrt(rightThrottleValue);
+        System.out.println("Multiplier value: " + leftMultiplier);
+        robotDrive.tankDrive(leftMultiplier * joystickOne.getY(),
+                rightMultiplier * joystickTwo.getY());
+
+        boolean buttonPressed = joystickOne.getRawButton(5);
+        if (buttonPressed) {
+            robotDrive.tankDrive(5, -5);
+        }
     }
 
     // Here be dragons
