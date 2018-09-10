@@ -7,16 +7,27 @@
 
 package com.williecubed.frc.team5318.commands;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.command.Command;
 import com.williecubed.frc.team5318.Robot;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 /**
- * An example command.  You can replace me with your own command.
+ * A command that makes the tank robot drive in a square.
  */
-public class ExampleCommand extends Command {
-    public ExampleCommand() {
+public class SquareCommand extends Command {
+
+    private static final int PREFERRED_RUN_COUNT = 10;
+
+    private int runCount = 0;
+
+    private DifferentialDrive robotDrive;
+
+    public SquareCommand(DifferentialDrive robotDrive) {
+        super("SquareCommand");
         // Use requires() here to declare subsystem dependencies
         requires(Robot.exampleSubsystem);
+        this.robotDrive = robotDrive;
     }
 
     /**
@@ -28,16 +39,22 @@ public class ExampleCommand extends Command {
 
     }
 
-
     /**
      * The execute method is called repeatedly when this Command is
      * scheduled to run until this Command either finishes or is canceled.
      */
     @Override
     protected void execute() {
-
+        robotDrive.tankDrive(0.5, 0.5);
+        Timer.delay(1);
+        robotDrive.tankDrive(0.5, -0.5);
+        Timer.delay(1);
+        robotDrive.tankDrive(0.5, 0.5);
+        Timer.delay(1);
+        robotDrive.tankDrive(0.5, -0.5);
+        Timer.delay(1);
+        runCount++;
     }
-
 
     /**
      * <p>
@@ -58,10 +75,8 @@ public class ExampleCommand extends Command {
      */
     @Override
     protected boolean isFinished() {
-        // TODO: Make this return true when this Command no longer needs to run execute()
-        return false;
+        return runCount >= 8;
     }
-
 
     /**
      * Called once when the command ended peacefully; that is it is called once
@@ -71,9 +86,8 @@ public class ExampleCommand extends Command {
      */
     @Override
     protected void end() {
-
+        runCount = 0;
     }
-
 
     /**
      * <p>
