@@ -31,13 +31,13 @@ public class OI
 
     // Start the command when the button is pressed and let it run the command
     // until it is finished as determined by it's isFinished method.
-    // button.whenPressed(new ExampleCommand());
+    // button.whenPressed(new SquareCommand());
 
     // Run the command while the button is being held down and interrupt it once
     // the button is released.
-    // button.whileHeld(new ExampleCommand());
+    // button.whileHeld(new SquareCommand());
 
     // Start the command when the button is released and let it run the command
     // until it is finished as determined by it's isFinished method.
-    // button.whenReleased(new ExampleCommand());
+    // button.whenReleased(new SquareCommand());
 }

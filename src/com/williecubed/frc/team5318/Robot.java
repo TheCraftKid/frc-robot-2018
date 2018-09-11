@@ -8,10 +8,7 @@
 package com.williecubed.frc.team5318;
 
 import com.williecubed.frc.team5318.commands.SquareCommand;
-import edu.wpi.first.wpilibj.CameraServer;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.Talon;
-import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.buttons.Button;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.command.Command;
@@ -41,8 +38,7 @@ public class Robot extends TimedRobot {
     private Command autonomousCommand;
 
     private DifferentialDrive robotDrive;
-    private Joystick joystickOne;
-    private Joystick joystickTwo;
+    private XboxController controller;
 
     @Override
     public void robotInit() {
@@ -51,12 +47,11 @@ public class Robot extends TimedRobot {
         Talon rightTalon = new Talon(1);
         robotDrive = new DifferentialDrive(leftTalon, rightTalon);
 
-        joystickOne = new Joystick(1);
-        joystickTwo = new Joystick(2);
+        controller = new XboxController(0);
 
         autonomousCommand = new SquareCommand(robotDrive);
 
-        Button buttonFive = new JoystickButton(joystickOne, 5);
+        Button buttonFive = new JoystickButton(controller, 5);
         buttonFive.whenPressed(autonomousCommand);
     }
 
@@ -71,30 +66,27 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        // This makes sure that the autonomous stops running when
-        // teleop starts running. If you want the autonomous to
-        // continue until interrupted by another command, remove
-        // this line or comment it out.
         if (autonomousCommand != null) {
-            autonomousCommand.cancel();
+//            autonomousCommand.cancel();
         }
     }
 
     @Override
     public void teleopPeriodic() {
 //        double multiplier = DEFAULT_MULTIPLIER;
-        if (isInArcadeMode) {
-
-        } else {
-            double twist = joystickTwo.getTwist();
-            double leftThrottleValue = joystickOne.getRawAxis(2) + 1;
-            double leftMultiplier = sigmoid(leftThrottleValue * DAMPENER);
-            double rightThrottleValue = joystickTwo.getRawAxis(3) + 1;
-            double rightMultiplier = sigmoid(rightThrottleValue * DAMPENER);
-            System.out.println("Multiplier value: " + leftMultiplier);
-            robotDrive.tankDrive(leftMultiplier * joystickOne.getY(),
-                    rightMultiplier * joystickTwo.getY());
-        }
+//            double leftThrottleValue = joystickOne.getRawAxis(2) + 1;
+//            double leftMultiplier = sigmoid(leftThrottleValue * DAMPENER);
+//            double rightThrottleValue = joystickTwo.getRawAxis(3) + 1;
+//            double rightMultiplier = sigmoid(rightThrottleValue * DAMPENER);
+//            double leftThrottleValue = controller.getRawAxis(2) + 1;
+//            double leftMultiplier = sigmoid(leftThrottleValue * DAMPENER);
+//            double rightThrottleValue = controller.getRawAxis(3) + 1;
+//            double rightMultiplier = sigmoid(rightThrottleValue * DAMPENER);
+//            System.out.println("Multiplier value: " + );
+//        robotDrive.tankDrive(sigmoid(controller.getY(GenericHID.Hand.kLeft) * (controller.getY(GenericHID.Hand.kLeft) - 0.5)),
+//                sigmoid(controller.getY(GenericHID.Hand.kRight)) * (controller.getY(GenericHID.Hand.kRight)) - 0.5);
+        robotDrive.tankDrive(controller.getY(GenericHID.Hand.kLeft) / 1.8,
+                controller.getY(GenericHID.Hand.kRight) / 1.8);
     }
 
     @Override
@@ -115,11 +107,6 @@ public class Robot extends TimedRobot {
 
 // Here be dragons
 
-//    @Override
-//    public void startCompetition() {
-//
-//    }
-
 //    /**
 //     * This function is run when the robot is first started up and should be
 //     * used for any initialization code.
@@ -131,24 +118,7 @@ public class Robot extends TimedRobot {
 //        // chooser.addObject("My Auto", new MyAutoCommand());
 //        SmartDashboard.putData("Auto mode", chooser);
 //    }
-//
-//    /**
-//     * This function is called once each time the robot enters Disabled mode.
-//     * You can use it to reset any subsystem information you want to clear when
-//     * the robot is disabled.
-//     */
-//    @Override
-//    public void disabledInit() {
-//
-//    }
-//
-//
-//
-//    @Override
-//    public void disabledPeriodic() {
-//        Scheduler.getInstance().run();
-//    }
-//
+
 //    /**
 //     * This autonomous (along with the chooser code above) shows how to select
 //     * between different autonomous modes using the dashboard. The sendable
@@ -175,30 +145,5 @@ public class Robot extends TimedRobot {
 //        if (autonomousCommand != null) {
 //            autonomousCommand.start();
 //        }
-//    }
-//
-//    /**
-//     * This function is called periodically during autonomous.
-//     */
-//    @Override
-//    public void autonomousPeriodic() {
-//        Scheduler.getInstance().run();
-//    }
-//
-//
-//    /**
-//     * This function is called periodically during operator control.
-//     */
-//    @Override
-//    public void teleopPeriodic() {
-//        Scheduler.getInstance().run();
-//    }
-//
-//    /**
-//     * This function is called periodically during test mode.
-//     */
-//    @Override
-//    public void testPeriodic() {
-//
 //    }
 }
