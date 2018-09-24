@@ -85,8 +85,8 @@ public class Robot extends TimedRobot {
 //            System.out.println("Multiplier value: " + );
 //        robotDrive.tankDrive(sigmoid(controller.getY(GenericHID.Hand.kLeft) * (controller.getY(GenericHID.Hand.kLeft) - 0.5)),
 //                sigmoid(controller.getY(GenericHID.Hand.kRight)) * (controller.getY(GenericHID.Hand.kRight)) - 0.5);
-        robotDrive.tankDrive(controller.getY(GenericHID.Hand.kLeft) / 1.8,
-                controller.getY(GenericHID.Hand.kRight) / 1.8);
+        robotDrive.tankDrive(controller.getY(GenericHID.Hand.kLeft) ,
+                controller.getY(GenericHID.Hand.kRight) );
     }
 
     @Override
