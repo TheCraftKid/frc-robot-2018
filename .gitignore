@@ -1,3 +1,7 @@
 build/
 dist/
 out/
+
+.idea/modules
+.idea/libraries
+.idea/workspace

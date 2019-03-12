@@ -1,5 +1,8 @@
 package frc.team0000.robot;
 
+import edu.wpi.cscore.CvSink;
+import edu.wpi.cscore.UsbCamera;
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -7,6 +10,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.team0000.robot.vision.VisionProcessor;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -25,6 +29,14 @@ public class Robot extends TimedRobot {
     private String m_autoSelected;
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
+    private VisionProcessor vision;
+
+    @Override
+    public void teleopInit() {
+        super.teleopInit();
+
+    }
+
     /**
      * This function is run when the robot is first started up and should be
      * used for any initialization code.
@@ -39,6 +51,10 @@ public class Robot extends TimedRobot {
         Talon rightTalon = new Talon(1);
         drive = new DifferentialDrive(leftTalon, rightTalon);
         controller = new XboxController(0);
+
+        UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
+        camera.setResolution(640, 480);
+        vision = VisionProcessor.getInstance(camera);
     }
 
     /**
@@ -93,9 +109,9 @@ public class Robot extends TimedRobot {
     @Override
     public void teleopPeriodic() {
         double leftY = controller.getY(GenericHID.Hand.kLeft);
-        double rightY = controller.getY(GenericHID.Hand. kRight);
+        double rightY = controller.getY(GenericHID.Hand.kRight);
         System.out.printf("Left input: %s; Right input: %s\n", leftY, rightY);
-        drive.tankDrive(smoothInput(leftY), smoothInput(rightY));
+        drive.tankDrive(rightY/ 1.4, leftY / 1.4);
     }
 
     /**
