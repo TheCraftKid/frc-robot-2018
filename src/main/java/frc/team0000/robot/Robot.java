@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.team0000.robot.state.StateTracker;
 import frc.team0000.robot.vision.VisionProcessor;
 
 /**
@@ -20,6 +21,7 @@ import frc.team0000.robot.vision.VisionProcessor;
  * project.
  */
 public class Robot extends TimedRobot {
+
     private static final String kDefaultAuto = "Default";
     private static final String kCustomAuto = "My Auto";
 
@@ -29,12 +31,13 @@ public class Robot extends TimedRobot {
     private String m_autoSelected;
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
+    private StateTracker robotState = new StateTracker();
+
     private VisionProcessor vision;
 
     @Override
     public void teleopInit() {
         super.teleopInit();
-
     }
 
     /**
@@ -67,6 +70,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void robotPeriodic() {
+        // TODO: Log things
     }
 
     /**
@@ -108,10 +112,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void teleopPeriodic() {
-        double leftY = controller.getY(GenericHID.Hand.kLeft);
-        double rightY = controller.getY(GenericHID.Hand.kRight);
-        System.out.printf("Left input: %s; Right input: %s\n", leftY, rightY);
-        drive.tankDrive(rightY/ 1.4, leftY / 1.4);
+        handleDriving();
     }
 
     /**
@@ -119,6 +120,26 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void testPeriodic() {
+    }
+
+    private void handleDriving() {
+        boolean turboToggled = controller.getBButton();
+        if (turboToggled) {
+            robotState.toggleTurboMode(!robotState.isInTurboMode());
+        }
+        double leftY = controller.getY(GenericHID.Hand.kLeft);
+        double rightY = controller.getY(GenericHID.Hand.kRight);
+        System.out.printf("Left input: %s; Right input: %s\n", leftY, rightY);
+        double leftMovement;
+        double rightMovement;
+        if (robotState.isInTurboMode()) {
+            leftMovement = leftY * 1.05;
+            rightMovement = rightY * 1.05;
+        } else {
+            leftMovement = leftY * 1.33;
+            rightMovement = rightY * 1.33;
+        }
+        drive.tankDrive(leftMovement, rightMovement);
     }
 
     private static double smoothInput(double input) {
