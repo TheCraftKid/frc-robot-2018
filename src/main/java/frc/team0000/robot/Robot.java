@@ -1,12 +1,8 @@
 package frc.team0000.robot;
 
-import edu.wpi.cscore.CvSink;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.Talon;
-import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -32,6 +28,8 @@ public class Robot extends TimedRobot {
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
     private StateTracker robotState = new StateTracker();
+
+    private boolean bButtonPressed = false;
 
     private VisionProcessor vision;
 
@@ -112,6 +110,7 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void teleopPeriodic() {
+        updateToggles();
         handleDriving();
     }
 
@@ -122,22 +121,32 @@ public class Robot extends TimedRobot {
     public void testPeriodic() {
     }
 
-    private void handleDriving() {
-        boolean turboToggled = controller.getBButton();
-        if (turboToggled) {
-            robotState.toggleTurboMode(!robotState.isInTurboMode());
+    private void updateToggles() {
+        if (controller.getBButton()) {
+            if (!bButtonPressed) {
+                boolean formerState = robotState.isInTurboMode();
+                robotState.toggleTurboMode(!formerState);
+                bButtonPressed = true;
+            }
+        } else {
+            bButtonPressed = false;
         }
+    }
+
+    private void handleDriving() {
         double leftY = controller.getY(GenericHID.Hand.kLeft);
         double rightY = controller.getY(GenericHID.Hand.kRight);
         System.out.printf("Left input: %s; Right input: %s\n", leftY, rightY);
         double leftMovement;
         double rightMovement;
         if (robotState.isInTurboMode()) {
-            leftMovement = leftY * 1.05;
-            rightMovement = rightY * 1.05;
+            System.out.println("Turbo mode active");
+            leftMovement = -(leftY / 1.05);
+            rightMovement = -(rightY / 1.05);
         } else {
-            leftMovement = leftY * 1.33;
-            rightMovement = rightY * 1.33;
+            System.out.println("Turbo mode deactivated");
+            leftMovement = -(leftY / 1.5);
+            rightMovement = -(rightY / 1.5);
         }
         drive.tankDrive(leftMovement, rightMovement);
     }
